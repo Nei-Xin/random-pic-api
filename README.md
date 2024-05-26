@@ -8,8 +8,6 @@
 
 [https://api.neix.in/random/](https://api.neix.in/random/)
 
-![https://api.neix.in/random/](https://api.neix.in/random/)
-
 ### 特性
 
 - 图片随机展示
