@@ -95,4 +95,4 @@ process_images(input_folder, output_folder_landscape, output_folder_portrait)
 
 ### 最后
 
-如何觉得还不错的话，可以点个star
+如果觉得还不错的话，可以点个star
