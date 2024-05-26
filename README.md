@@ -28,7 +28,9 @@ services:
     random-api:
         image: 'neixin/random-pic-api'
         volumes:
+			# 横屏图片
             - './portrait:/var/www/html/portrait'
+            # 竖屏图片
             - './landscape:/var/www/html/landscape'
         ports:
             - '8080:80'
