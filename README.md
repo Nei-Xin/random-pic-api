@@ -26,9 +26,9 @@
 
 ### 在线体验
 
-[https://api.zzii.de/](https://api.zzii.de/random)
+[https://api.zzii.de/random](https://api.zzii.de/random)
 
-![https://api.zzii.de/](https://api.zzii.de/random)
+![https://api.zzii.de/random](https://api.zzii.de/random)
 
 ### 特性
 
