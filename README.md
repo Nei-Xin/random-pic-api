@@ -10,13 +10,13 @@
 
 ##### 新增
 
-- /pc路径，显示横屏图片，例如：https://api.zzii.de/random/pc
+- /pc路径，显示横屏图片，例如：[https://api.neix.in/random/pc](https://api.neix.in/random/pc)
 
-![https://api.zzii.de/random/pc](https://api.zzii.de/random/pc)
+![https://api.neix.in/random/pc](https://api.neix.in/random/pc)
 
-- /mobile，显示竖屏图片，例如：https://api.zzii.de/random/mobile
+- /mobile，显示竖屏图片，例如：[https://api.neix.in/random/mobile](https://api.neix.in/random/mobile)
 
-![https://api.zzii.de/random/mobile](https://api.zzii.de/random/mobile)
+![https://api.neix.in/random/mobile](https://api.neix.in/random/mobile)
 
 - 镜像大小减小了
 
@@ -26,9 +26,9 @@
 
 ### 在线体验
 
-[https://api.zzii.de/random](https://api.zzii.de/random)
+[https://api.neix.in/random](https://api.zzii.de/random)
 
-![https://api.zzii.de/random](https://api.zzii.de/random)
+![https://api.neix.in/random](https://api.neix.in/random)
 
 ### 特性
 
