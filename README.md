@@ -118,3 +118,5 @@ process_images(input_folder, output_folder_landscape, output_folder_portrait)
 ### 最后
 
 如果觉得还不错的话，可以点个star
+
+个人博客地址：[Joy's Blog](https://blog.gckjoy.com/)
