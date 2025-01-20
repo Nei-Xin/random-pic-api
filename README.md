@@ -1,9 +1,5 @@
 ### 搭建一个简单的随机图片API，支持Docker部署
 
-### 项目地址
-
-[https://github.com/Nei-Xin/random-pic-api](https://github.com/Nei-Xin/random-pic-api)
-
 ### 更新
 
 #### 2024.5.27
@@ -115,8 +111,11 @@ process_images(input_folder, output_folder_landscape, output_folder_portrait)
 
 将横屏和竖屏的图片分开，并转化为webp格式，使用时注意修改文件路径
 
+### 赞助
+感谢 [YXVM](https://yxvm.com/) 对本项目的支持！
 ### 最后
 
 如果觉得还不错的话，可以点个star
 
 个人博客地址：[Joy's Blog](https://blog.gckjoy.com/)
+
