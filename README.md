@@ -119,3 +119,8 @@ process_images(input_folder, output_folder_landscape, output_folder_portrait)
 
 个人博客地址：[极客与乐趣](https://blog.gckjoy.com/)
 
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Nei-Xin/random-pic-api&type=Date)](https://www.star-history.com/#Nei-Xin/random-pic-api&Date)
+
