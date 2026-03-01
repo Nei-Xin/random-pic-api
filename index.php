@@ -22,6 +22,18 @@ function generateImagePath($path, $img) {
     return $path . '/' . $img;
 }
 
+// 获取MIME类型
+function getMimeType($ext) {
+    switch ($ext) {
+        case 'webp': return 'image/webp';
+        case 'jpg':
+        case 'jpeg': return 'image/jpeg';
+        case 'png':  return 'image/png';
+        case 'gif':  return 'image/gif';
+        default:     return 'image/jpeg';
+    }
+}
+
 // 检测用户代理以区分手机和电脑访问
 $userAgent = $_SERVER['HTTP_USER_AGENT'];
 $isMobile = preg_match('/(android|iphone|ipad|ipod|blackberry|windows phone)/i', $userAgent);
@@ -36,38 +48,68 @@ if ($isMobile) {
 // 缓存图片列表
 $imgList = getImagesFromDir($path);
 
+// 如果指定了type=img参数，返回原始图片
+if (isset($_GET['type']) && $_GET['type'] === 'img') {
+    if (isset($_GET['file'])) {
+        $specific = basename($_GET['file']);
+        if (in_array($specific, $imgList)) {
+            $img = $specific;
+        } else {
+            http_response_code(404);
+            exit;
+        }
+    } else {
+        shuffle($imgList);
+        $img = reset($imgList);
+    }
+    $img_extension = pathinfo($img, PATHINFO_EXTENSION);
+    header('Content-Type: ' . getMimeType($img_extension));
+    readfile(generateImagePath($path, $img));
+    exit;
+}
+
 // 从列表中随机选择一张图片
 shuffle($imgList);
 $img = reset($imgList);
-
-// 获取图片的格式
 $img_extension = pathinfo($img, PATHINFO_EXTENSION);
 
-// 根据图片的格式设置 Content-Type
-switch ($img_extension) {
-    case 'webp':
-        header('Content-Type: image/webp');
-        break;
-    case 'jpg':
-    case 'jpeg':
-        header('Content-Type: image/jpeg');
-        break;
-    case 'png':
-        header('Content-Type: image/png');
-        break;
-    case 'gif':
-        header('Content-Type: image/gif');
-        break;
-    // 添加其他格式的处理方式
-    // case 'bmp':
-    //     header('Content-Type: image/bmp');
-    //     break;
+// 检测是否为浏览器直接访问
+$accept = isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : '';
+$isBrowserAccess = strpos($accept, 'text/html') !== false;
+
+if ($isBrowserAccess) {
+    $encodedImg = urlencode($img);
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Random Image</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #000;
+        }
+        img {
+            max-width: 100%;
+            max-height: 100vh;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <img src="?type=img&file=<?= $encodedImg ?>" alt="Random Image">
+</body>
+</html>
+<?php
+} else {
+    header('Content-Type: ' . getMimeType($img_extension));
+    readfile(generateImagePath($path, $img));
 }
-
-// 生成完整的图片路径
-$img_path = generateImagePath($path, $img);
-
-// 直接输出所选的随机图片
-readfile($img_path);
 ?>
 
