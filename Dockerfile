@@ -1,13 +1,16 @@
-# 使用官方 PHP 镜像作为基础镜像
 FROM php:alpine
 
-# 将本地文件复制到容器中
+WORKDIR /var/www/html
+
 COPY index.php /var/www/html/
+COPY lib /var/www/html/lib
 COPY pc /var/www/html/pc
 COPY mobile /var/www/html/mobile
 
-# 暴露容器的 80 端口
 EXPOSE 80
 
-# 设置容器启动时执行的命令
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD php -r "exit(@file_get_contents('http://127.0.0.1:80/') === false ? 1 : 0);"
+
 CMD ["php", "-S", "0.0.0.0:80", "-t", "/var/www/html/"]
+
