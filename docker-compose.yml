@@ -1,0 +1,12 @@
+services:
+  random-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: random-pic-api:local
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./photos/portrait:/var/www/html/portrait:ro
+      - ./photos/landscape:/var/www/html/landscape:ro

@@ -10,19 +10,48 @@ function ri_respond_with_error($statusCode, $message) {
 
 function ri_get_images_from_dir($path) {
     $images = array();
-    if ($img_dir = @opendir($path)) {
-        while (false !== ($img_file = readdir($img_dir))) {
-            if (preg_match("/\.(webp|jpg|jpeg|png|gif)$/i", $img_file)) {
-                $images[] = $img_file;
+    $directories = array(array($path, ''));
+
+    while (!empty($directories)) {
+        list($currentPath, $relativePath) = array_pop($directories);
+        $imgDir = @opendir($currentPath);
+        if ($imgDir === false) {
+            continue;
+        }
+
+        while (false !== ($entry = readdir($imgDir))) {
+            if ($entry === '.' || $entry === '..') {
+                continue;
+            }
+
+            $entryPath = rtrim($currentPath, '/\\') . DIRECTORY_SEPARATOR . $entry;
+            $entryRelativePath = $relativePath === ''
+                ? $entry
+                : $relativePath . '/' . $entry;
+
+            if (is_dir($entryPath)) {
+                if (!is_link($entryPath)) {
+                    $directories[] = array($entryPath, $entryRelativePath);
+                }
+                continue;
+            }
+
+            if (!is_link($entryPath)
+                && is_file($entryPath)
+                && preg_match("/\.(webp|jpg|jpeg|png|gif)$/i", $entry)) {
+                $images[] = $entryRelativePath;
             }
         }
-        closedir($img_dir);
+
+        closedir($imgDir);
     }
+
     return $images;
 }
 
 function ri_generate_image_path($path, $img) {
-    return rtrim($path, '/\\') . DIRECTORY_SEPARATOR . $img;
+    $relativePath = str_replace('/', DIRECTORY_SEPARATOR, $img);
+    return rtrim($path, '/\\') . DIRECTORY_SEPARATOR . $relativePath;
 }
 
 function ri_get_mime_type($ext) {
@@ -73,7 +102,7 @@ function ri_set_image_cache_headers($imgPath, $maxAge = 3600) {
 
 function ri_get_random_or_specific_image($imgList) {
     if (isset($_GET['file'])) {
-        $specific = basename((string)$_GET['file']);
+        $specific = is_string($_GET['file']) ? $_GET['file'] : '';
         if (in_array($specific, $imgList, true)) {
             return $specific;
         }
@@ -108,7 +137,7 @@ function ri_is_browser_access() {
 
 function ri_render_html_page($img) {
     ri_set_html_cache_headers();
-    $encodedImg = urlencode($img);
+    $encodedImg = rawurlencode($img);
 ?>
 <!DOCTYPE html>
 <html>
@@ -158,4 +187,3 @@ function ri_handle_random_image_request($path) {
 
     ri_output_image($path, $img);
 }
-

@@ -2,6 +2,13 @@
 
 ### 更新
 
+#### 2026.8.8
+
+##### 新增
+
+- 支持递归遍历图片目录，可以在横屏和竖屏目录中使用任意层级的子目录组织图片。
+- 使用相对路径识别图片，不同子目录中可以存在同名图片。
+
 #### 2024.5.27
 
 ##### 新增
@@ -30,7 +37,8 @@
 
 - 图片随机展示
 - 设备适配：通过检测用户代理字符串，判断访问设备是手机还是电脑，并根据设备类型选择对应的图片文件夹路径。
-- 图片格式支持：web,jpg,jpeg,png,gif
+- 递归目录：自动遍历横屏和竖屏目录下的所有子目录，无需将图片全部放在目录第一层。
+- 图片格式支持：webp,jpg,jpeg,png,gif
 
 ### 部署
 
@@ -41,18 +49,47 @@
 #### Docker
 
 ```yml
-version: '3.9'
 services:
-    random-api:
-        image: 'neixin/random-pic-api'
-        volumes:
-# 竖屏图片
-            - './portrait:/var/www/html/portrait'
-# 横屏图片
-            - './landscape:/var/www/html/landscape'
-        ports:
-            - '8080:80'
+  random-api:
+    image: neixin/random-pic-api:latest
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./photos/portrait:/var/www/html/portrait:ro
+      - ./photos/landscape:/var/www/html/landscape:ro
 ```
+
+上面的配置会直接使用 Docker Hub 中的镜像，启动命令：
+
+```bash
+docker compose up -d
+```
+
+项目内提供的 `docker-compose.yml` 使用当前源码和 `Dockerfile` 构建本地镜像，适合开发或自行修改代码后部署：
+
+```bash
+docker compose up -d --build
+```
+
+图片可以按分类存放在任意层级的子目录中，例如：
+
+```text
+photos/
+├─ landscape/
+│  ├─ nature/
+│  │  ├─ mountain.jpg
+│  │  └─ lake.webp
+│  └─ city/
+│     └─ night.png
+└─ portrait/
+   ├─ people/
+   │  └─ portrait.jpg
+   └─ wallpaper/
+      └─ phone.webp
+```
+
+程序会递归扫描 `/var/www/html/portrait` 和 `/var/www/html/landscape`。不要将整个图片主目录挂载到 `/var/www/html`，否则会覆盖容器内的程序文件。
 
 ### 图片处理
 
