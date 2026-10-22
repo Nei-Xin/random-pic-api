@@ -2,6 +2,12 @@
 
 ### 更新
 
+#### 2026.10.22
+
+- Docker 基础镜像固定为 `php:8.5.12-cli-alpine`，包含 CVE-2026-109618、CVE-2026-109619 的官方修复。
+- 关闭本项目不需要的文件上传和 POST 表单自动解析；构建时验证 PHP 版本、配置和 PHP 文件语法，CI 构建时拉取基础镜像。
+- 已运行的容器需要重新构建或拉取修复后的镜像并重建容器，更新源码本身不会升级正在运行的 PHP。
+
 #### 2026.8.8
 
 ##### 新增
@@ -44,7 +50,11 @@
 
 #### PHP
 
-直接丢到有PHP和Nginx的环境中就行
+将程序放到 PHP 和 Nginx 环境中，并配置横屏和竖屏图片目录。
+
+根据 [PHP 官方安全公告](https://www.php.net/archive/2026.php#2026-10-21-5)，PHP 8.2、8.3、8.4、8.5 分支分别至少需要 **8.2.35、8.3.36、8.4.27、8.5.12**（或发行商明确包含这两个漏洞修复的补丁包）。推荐使用 PHP 8.5.12 或同分支更新的安全版本。升级后重启所有 PHP-FPM / Web 服务进程，并确认处理 Web 请求的 PHP 已更新；命令行 PHP 可能与 Web 服务使用不同版本。
+
+可将 `docker/php-security.ini` 中的配置加入该站点实际使用的 PHP 配置后重启服务。关闭上传和 POST 解析是额外加固，不能替代 PHP 升级。
 
 #### Docker
 
@@ -71,6 +81,29 @@ docker compose up -d
 ```bash
 docker compose up -d --build
 ```
+
+#### 更新已有部署以应用安全修复
+
+使用本仓库源码构建（项目内的 `docker-compose.yml`）：
+
+```bash
+docker compose build --pull --no-cache
+docker compose up -d --force-recreate
+docker compose exec random-api php -v
+docker compose exec random-api php -r 'var_export(["file_uploads" => ini_get("file_uploads"), "enable_post_data_reading" => ini_get("enable_post_data_reading")]);'
+```
+
+确认 PHP 为 8.5.12，两个配置均为关闭状态（空字符串或 `"0"`）。后续安全更新需要同步更新 `Dockerfile` 中固定的 PHP 镜像版本并重新构建。
+
+使用 Docker Hub 镜像的部署，在本次修改构建并发布到 Docker Hub 后执行：
+
+```bash
+docker compose pull
+docker compose up -d --force-recreate
+docker compose exec random-api php -v
+```
+
+同样确认运行中的 PHP 为已修复版本；只重启旧容器不会更新镜像中的 PHP。
 
 图片可以按分类存放在任意层级的子目录中，例如：
 

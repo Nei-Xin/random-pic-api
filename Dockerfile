@@ -1,4 +1,7 @@
-FROM php:alpine
+# Includes the fixes for CVE-2026-109618 and CVE-2026-109619.
+FROM php:8.5.12-cli-alpine
+
+COPY docker/php-security.ini /usr/local/etc/php/conf.d/zz-security.ini
 
 WORKDIR /var/www/html
 
@@ -6,6 +9,13 @@ COPY index.php /var/www/html/
 COPY lib /var/www/html/lib
 COPY pc /var/www/html/pc
 COPY mobile /var/www/html/mobile
+
+# Fail the build if the runtime is unpatched or request parsing is re-enabled.
+RUN php -r 'exit(PHP_VERSION_ID >= 80512 && !ini_get("file_uploads") && !ini_get("enable_post_data_reading") ? 0 : 1);' \
+    && php -l index.php \
+    && php -l lib/random_image.php \
+    && php -l pc/index.php \
+    && php -l mobile/index.php
 
 EXPOSE 80
 
